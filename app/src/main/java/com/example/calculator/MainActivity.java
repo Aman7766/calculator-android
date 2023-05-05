@@ -1,10 +1,12 @@
 package com.example.calculator;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +16,7 @@ import java.util.Stack;
 public class MainActivity extends AppCompatActivity {
 TextView result;
     Button one,two,three,four,five,six,seven,eight,nine,zero;
-    Button c,percentage,divide,dot,equal,plus;
+    Button c,percentage,divide,dot,equal,plus,minus,multilply;
     String data="";
 
     @Override
@@ -34,9 +36,50 @@ TextView result;
         zero=findViewById(R.id.zero);
         plus=findViewById(R.id.plus);
         equal=findViewById(R.id.equal);
+        dot=findViewById(R.id.dot);
+        divide=findViewById(R.id.divide);
+
+        minus=findViewById(R.id.minus);
+        multilply=findViewById(R.id.multiply);
+        divide=findViewById(R.id.divide);
+        percentage=findViewById(R.id.percent);
 
         c=findViewById(R.id.c);
-
+//        percentage.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                data+="%";
+//                result.setText(""+data);
+//            }
+//        });
+        divide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                data+="/";
+                result.setText(""+data);
+            }
+        });
+//       // dot.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                data+=".";
+//                result.setText(""+data);
+//            }
+//        });
+        minus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                data+="-";
+                result.setText(""+data);
+            }
+        });
+        multilply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                data+="*";
+                result.setText(""+data);
+            }
+        });
         one.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,31 +172,133 @@ TextView result;
         equal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                double sum=0.0;
-                String CurV="";
-                Stack<Character> s=new Stack<>();
-                for(int i=0;i<data.length();i++)
-                {
-                    if(data.charAt(i)!='+')
-                    {
-                        CurV+=data.charAt(i);
-                    }
-                    else
-                    {
-                    //  sum+=Double.parseDouble(CurV);
+                double Opvalue=0.0;
+                char[] chr=data.toCharArray();
+                Stack<Double> oprands=new Stack<>();
+                Stack<Character> oprators=new Stack<>();
+                Stack<String> opdot=new Stack<>();
+                String dataV="";
 
-                      s.push(CurV);
-                      if(i<data.length()-1)
-                      {
-                          s.push()
-                      }
+                for(int i=0;i<chr.length;i++)
+                {
+                    dataV="";
+
+//                    if(chr[i]=='.')
+//                    {
+//                        dataV=Double.toString(oprands.pop());
+//                        dataV+='.';
+//                        opdot.push(dataV);
+//                    }
+//                 else
+                  if (chr[i]>='0' && chr[i]<='9')
+                    {
+//                        if(opdot.size()>0)
+//                        {
+//                            dataV+=opdot.pop();
+//                        }
+
+
+                     while(i<chr.length && chr[i]>='0' && chr[i]<='9')
+                     {
+                         dataV+=chr[i];
+                         i++;
+                     }
+
+
+
+                        System.out.println(dataV);
+                     Opvalue=Double.parseDouble(dataV);
+                     System.out.println(Opvalue);
+                     oprands.push(Opvalue);
+                     i--;
                     }
+                 else if(chr[i]=='+'|| chr[i]=='-'|| chr[i]=='*'|| chr[i]=='/')
+                {
+                    while(oprators.size()>0 && Precedence(chr[i])<=Precedence(oprators.peek()))
+                    {
+                      double v2=oprands.pop();
+                        double v1=oprands.pop();
+                        char opr=oprators.pop();
+                        double oprResult=Operation(v1,v2,opr);
+                        oprands.push((oprResult));
+                    }
+
+                    oprators.push(chr[i]);
                 }
+                }
+
+
+                while(oprators.size()!=0 )
+                {
+                    if(oprands.size()==1)
+                    {
+                        Context context=getApplicationContext();
+                        CharSequence charSequence="Inavlid Format";
+                        int duration=Toast.LENGTH_SHORT;
+                        Toast toast=Toast.makeText(context,charSequence,duration);
+                        toast.show();
+
+                        return;
+                    }
+                    double v2=oprands.pop();
+                    double v1=oprands.pop();
+                    char opr=oprators.pop();
+                    double oprResult=Operation(v1,v2,opr);
+                    oprands.push((oprResult));
+                }
+
+
+                result.setText("" +oprands.peek());
+
             }
+
+
+
         });
 
 
 
 
     }
+    public static int Precedence(char ch)
+    {
+        if(ch=='+')
+        {
+            return 1;
+        }
+        else if(ch=='-')
+        {
+            return 1;
+        }
+        else if(ch=='*')
+        {
+            return 1;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+
+    public static double Operation(double v1,double v2,char ch)
+    {
+        if(ch=='+')
+        {
+            return v1+v2;
+        }
+        else if(ch=='-')
+        {
+            return v1-v2;
+        }
+        else if(ch=='*')
+        {
+            return v1*v2;
+        }
+        else
+        {
+            return v1/v2;
+        }
+    }
+
+
 }
