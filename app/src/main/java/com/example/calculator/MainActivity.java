@@ -100,7 +100,7 @@ TextView result;
                {
                    data+="0.";
 
-                   System.out.println(data +" size 0");
+
                    result.setText(""+data);
                }
                else if(data.charAt(data.length()-1)=='+' ||
@@ -109,7 +109,7 @@ TextView result;
                        data.charAt(data.length()-1)=='*')
                {
                    data+="0.";
-                   System.out.println(data+"oeprators") ;
+
                    result.setText(""+data);
                }
 
@@ -118,12 +118,13 @@ TextView result;
                )
                {
                    data+=".";
-                   System.out.println(data+"dot dot");
+
                    result.setText(""+data);
                }
 
+
                 else {
-                   System.out.println(data);
+
                     result.setText(""+data);
                 }
             }
@@ -275,31 +276,39 @@ TextView result;
                 char[] chr=data.toCharArray();
                 Stack<Double> oprands=new Stack<>();
                 Stack<Character> oprators=new Stack<>();
+                Stack<String> dotOprands=new Stack<>();
+
                 String dataV="";
 
                 for(int i=0;i<chr.length;i++)
                 {
                     dataV="";
-
-
-                  if (chr[i]>='0' && chr[i]<='9')
+                    if(chr[i]=='.')
                     {
+
+
+                         String dotRsult= oprands.pop().toString();  //1
+                         dataV+=dotRsult.substring(0,dotRsult.length()-2);
+                         dataV+='.';
+                        System.out.println(dataV);
+                        dotOprands.push(dataV);
+                    }
+
+
+                       else if (chr[i]>='0' && chr[i]<='9')
+                    {
+                        if(!dotOprands.empty())
+                        {
+                            dataV+=dotOprands.pop();
+                        }
                         while(i<chr.length && chr[i]>='0' && chr[i]<='9')
                      {
                          dataV+=chr[i];
                          i++;
                      }
 
-                        if(chr[i]=='.')
-                        {
-                            dataV+='.';
-                        i++;
-                        }
-                        while(i<chr.length && chr[i]>='0' && chr[i]<='9')
-                        {
-                            dataV+=chr[i];
-                            i++;
-                        }
+
+
 
 
 
