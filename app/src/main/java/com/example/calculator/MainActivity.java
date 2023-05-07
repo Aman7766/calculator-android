@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
-TextView result;
+    TextView result;
     Button one,two,three,four,five,six,seven,eight,nine,zero;
     Button c,percentage,divide,dot,equal,plus,minus,multilply,pm;
     String data="";
@@ -61,7 +61,7 @@ TextView result;
                     result.setText("");
                 }
 
-               else if(data.charAt(data.length()-1)!='/')
+                else if(data.charAt(data.length()-1)!='/')
                 {
                     data+="/";
                     result.setText(""+data);
@@ -81,7 +81,7 @@ TextView result;
                     result.setText("-");
                 }
 
-               else if(data.charAt(0)!='-')
+                else if(data.charAt(0)!='-')
                 {
                     data='-'+data;
                     result.setText(""+data);
@@ -96,34 +96,35 @@ TextView result;
             @Override
             public void onClick(View view) {
 
-               if(data.length()==0)
-               {
-                   data+="0.";
+                if(data.length()==0)
+                {
+                    data+="0.";
 
-                   System.out.println(data +" size 0");
-                   result.setText(""+data);
-               }
-               else if(data.charAt(data.length()-1)=='+' ||
-                       data.charAt(data.length()-1)=='-'||
-                       data.charAt(data.length()-1)=='/'||
-                       data.charAt(data.length()-1)=='*')
-               {
-                   data+="0.";
-                   System.out.println(data+"oeprators") ;
-                   result.setText(""+data);
-               }
 
-               else if(data.charAt(data.length()-1)!='.'
-               &&(data.charAt(data.length()-1)>='0' && data.charAt(data.length()-1)<='9')
-               )
-               {
-                   data+=".";
-                   System.out.println(data+"dot dot");
-                   result.setText(""+data);
-               }
+                    result.setText(""+data);
+                }
+                else if(data.charAt(data.length()-1)=='+' ||
+                        data.charAt(data.length()-1)=='-'||
+                        data.charAt(data.length()-1)=='/'||
+                        data.charAt(data.length()-1)=='*')
+                {
+                    data+="0.";
+
+                    result.setText(""+data);
+                }
+
+                else if(data.charAt(data.length()-1)!='.'
+                        &&(data.charAt(data.length()-1)>='0' && data.charAt(data.length()-1)<='9')
+                )
+                {
+                    data+=".";
+
+                    result.setText(""+data);
+                }
+
 
                 else {
-                   System.out.println(data);
+
                     result.setText(""+data);
                 }
             }
@@ -155,7 +156,7 @@ TextView result;
 
                     result.setText("");
                 }
-              else  if(data.charAt(data.length()-1)!='*')
+                else  if(data.charAt(data.length()-1)!='*')
                 {
                     data+="*";
                     result.setText(""+data);
@@ -170,8 +171,8 @@ TextView result;
             @Override
             public void onClick(View view) {
 
-            data+="1";
-            result.setText(""+data);
+                data+="1";
+                result.setText(""+data);
             }
         });
         two.setOnClickListener(new View.OnClickListener() {
@@ -254,7 +255,7 @@ TextView result;
 
                     result.setText("");
                 }
-               else if(data.charAt(data.length()-1)!='+')
+                else if(data.charAt(data.length()-1)!='+')
                 {
                     data+="+";
                     result.setText(""+data);
@@ -275,25 +276,30 @@ TextView result;
                 char[] chr=data.toCharArray();
                 Stack<Double> oprands=new Stack<>();
                 Stack<Character> oprators=new Stack<>();
+                Stack<String> dotOprands=new Stack<>();
+
                 String dataV="";
 
                 for(int i=0;i<chr.length;i++)
                 {
                     dataV="";
-
-
-                  if (chr[i]>='0' && chr[i]<='9')
+                    if(chr[i]=='.')
                     {
-                        while(i<chr.length && chr[i]>='0' && chr[i]<='9')
-                     {
-                         dataV+=chr[i];
-                         i++;
-                     }
 
-                        if(chr[i]=='.')
+
+                        String dotRsult= oprands.pop().toString();  //1
+                        dataV+=dotRsult.substring(0,dotRsult.length()-2);
+                        dataV+='.';
+                        System.out.println(dataV);
+                        dotOprands.push(dataV);
+                    }
+
+
+                    else if (chr[i]>='0' && chr[i]<='9')
+                    {
+                        if(!dotOprands.empty())
                         {
-                            dataV+='.';
-                        i++;
+                            dataV+=dotOprands.pop();
                         }
                         while(i<chr.length && chr[i]>='0' && chr[i]<='9')
                         {
@@ -303,39 +309,42 @@ TextView result;
 
 
 
+
+
+
                         System.out.println(dataV);
-                     Opvalue=Double.parseDouble(dataV);
-                     System.out.println(Opvalue);
-                     oprands.push(Opvalue);
-                     i--;
+                        Opvalue=Double.parseDouble(dataV);
+                        System.out.println(Opvalue);
+                        oprands.push(Opvalue);
+                        i--;
                     }
-                 else if(chr[i]=='+'|| chr[i]=='-'|| chr[i]=='*'|| chr[i]=='/')
-                {
-
-                    if(oprands.size()==0)
+                    else if(chr[i]=='+'|| chr[i]=='-'|| chr[i]=='*'|| chr[i]=='/')
                     {
-                        oprands.push(0.0);
 
-                    }
-                    while(oprators.size()>0 && Precedence(chr[i])<=Precedence(oprators.peek()))
-                    {
-                      double v2=oprands.pop();
-                        double v1=oprands.pop();
-                        char opr=oprators.pop();
-                        if(v1<v2)
+                        if(oprands.size()==0)
                         {
-                            double oprResult=Operation(v2,v1,opr);
+                            oprands.push(0.0);
+
                         }
-                        else
+                        while(oprators.size()>0 && Precedence(chr[i])<=Precedence(oprators.peek()))
                         {
+                            double v2=oprands.pop();
+                            double v1=oprands.pop();
+                            char opr=oprators.pop();
+                            if(v1<v2)
+                            {
+                                double oprResult=Operation(v2,v1,opr);
+                            }
+                            else
+                            {
+                                double oprResult=Operation(v1,v2,opr);
+                            }
                             double oprResult=Operation(v1,v2,opr);
+                            oprands.push((oprResult));
                         }
-                        double oprResult=Operation(v1,v2,opr);
-                        oprands.push((oprResult));
-                    }
 
-                    oprators.push(chr[i]);
-                }
+                        oprators.push(chr[i]);
+                    }
                 }
 
 
@@ -415,3 +424,4 @@ TextView result;
 
 
 }
+
